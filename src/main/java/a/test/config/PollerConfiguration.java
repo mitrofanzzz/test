@@ -64,14 +64,14 @@ public class PollerConfiguration {
 //                .channel("processedChannel").get();
 //    }
 
-    @Bean
-    public IntegrationFlow flow2() {
-        return IntegrationFlows.from("processedChannel")
-                .log()
-                .aggregate(messageAggregator)
-                .log()
-                .channel("outputChannel").get();
-    }
+//    @Bean
+//    public IntegrationFlow flow2() {
+//        return IntegrationFlows.from("processedChannel")
+//                .log()
+//                .aggregate(messageAggregator)
+//                .log()
+//                .channel("outputChannel").get();
+//    }
 
     @Bean
     public MessageSource<String[]> stupidSource() {

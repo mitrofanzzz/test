@@ -13,18 +13,21 @@ import java.util.*;
 @Component
 public class MessageAggregator {
     @Aggregator(inputChannel = "processedChannel", outputChannel = "outputChannel")
-    public List<String> aggregateMessage(MessageGroup messageGroup) {
-        List<String> listOfOdd = new LinkedList<>();
-        List<String> listOfEven = new LinkedList<>();
-log.info("message-group - {}", messageGroup);
-        for (Message<?> message : messageGroup.getMessages()) {
-            Map<String, List<String>> payload = (Map<String, List<String>>) message.getPayload();
+    public List<String> aggregateMessage(Collection<Message<?>> messageGroup) {
+        log.info("message-group - {}", messageGroup);
 
-            if (payload.containsKey("odd")) listOfOdd.addAll(payload.get("odd"));
-            if (payload.containsKey("even")) listOfEven.addAll(payload.get("even"));
+        List<String> odd = new LinkedList<>();
+        List<String> even = new LinkedList<>();
 
+        Iterator<Message<?>> iterator = messageGroup.iterator();
+        while (iterator.hasNext()) {
+            Message<?> next = iterator.next();
+            Map<String,List<String>> payload = (Map<String, List<String>>) next.getPayload();
+            if (payload.containsKey("odd")) odd.addAll(payload.get("odd"));
+            if (payload.containsKey("even")) even.addAll(payload.get("even"));
         }
-        return merge(listOfOdd, listOfEven);
+
+        return merge(odd, even);
     }
 
     public static List<String> merge(List<String> odd, List<String> even) {
@@ -41,7 +44,6 @@ log.info("message-group - {}", messageGroup);
 //    protected Object aggregatePayloads(MessageGroup group, Map<String, Object> defaultHeaders) {
 //        return aggregateMessage(group);
 //    }
-
 
 
 }
