@@ -6,8 +6,11 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class MyCorrelationStrategy implements CorrelationStrategy {
+
+    public static final String CORRELATION_ID = "CORRELATION_ID";
+
     @Override
     public Object getCorrelationKey(Message<?> message) {
-        return message.getHeaders().get("CORRELATION_ID");
+        return message.getHeaders().get(CORRELATION_ID);
     }
 }

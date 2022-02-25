@@ -5,7 +5,6 @@ import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.integration.annotation.Transformer;
-import org.springframework.messaging.Message;
 import org.springframework.messaging.support.GenericMessage;
 import org.springframework.stereotype.Component;
 
@@ -17,6 +16,10 @@ import java.util.Map;
 @AllArgsConstructor
 @Component
 public class MasterService {
+    public static final String ODD = "odd";
+    public static final String EVEN = "even";
+    public static final String SPLITTED_CHANNEL = "splittedChannel";
+    public static final String PROCESSED_CHANNEL = "processedChannel";
     private Slave1 slave1;
     private Slave2 slave2;
 
@@ -30,21 +33,20 @@ public class MasterService {
         this.slave2 = slave2;
     }
 
-    @Transformer(inputChannel = "splittedChannel", outputChannel = "processedChannel")
+    @Transformer(inputChannel = SPLITTED_CHANNEL, outputChannel = PROCESSED_CHANNEL)
     public Map<String, List<String>> handleMessage(GenericMessage<Map<String, List<String>>> message) {
-        if (message.getPayload().containsKey("even")) {
-
-            List<String> even = slave1.processStrings(message.getPayload().get("even"));
-            return Map.of("even", even);
-
+        if (message.getPayload().containsKey(EVEN)) {
+            return getStringListMap(message, slave1, EVEN);
         }
 
-        if (message.getPayload().containsKey("odd")) {
-
-            List<String> odd = slave2.processStrings(message.getPayload().get("odd"));
-            return Map.of("odd", odd);
+        if (message.getPayload().containsKey(ODD)) {
+            return getStringListMap(message, slave2, ODD);
         }
-
         return Map.of();
+    }
+
+    private Map<String, List<String>> getStringListMap(GenericMessage<Map<String, List<String>>> message, Slave slave, String key) {
+        List<String> odd = slave.processStrings(message.getPayload().get(key));
+        return Map.of(key, odd);
     }
 }

@@ -10,8 +10,10 @@ import org.springframework.messaging.MessageHandler;
 @Configuration
 public class ReceiverConfiguration {
 
+    public static final String OUTPUT_CHANNEL = "outputChannel";
+
     @Bean
-    @ServiceActivator(inputChannel = "outputChannel")
+    @ServiceActivator(inputChannel = OUTPUT_CHANNEL)
     public MessageHandler messageHandler(){
         return message -> log.info(message.getPayload().toString());
     }
